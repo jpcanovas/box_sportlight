@@ -21,8 +21,8 @@ use <button.scad>
 *import("C:/Users/Juan Pedro/Documents/OpenSCAD/OpenPads/Structure interne.stl");
 *import("C:/Users/Juan Pedro/Documents/OpenSCAD/OpenPads/Boitier.stl");
 
-wi=90; // outer width of box
-li=70; // outer length
+wi=90; // inner width of box
+li=70; // inner length
 hi=35; // height
 th=2.4; // wall thickness
 
@@ -55,29 +55,39 @@ difference() {
         
         // Supports for the battery
         translate([-43,-4,0]) batt_support();
-        translate([-43,21,0]) batt_support();
+        translate([-43,20,0]) batt_support();
         translate([-43,-28,0]) batt_support();
         
         // Clips for the WemosD1 Mini
         translate ([40,-5,5]) rotate([0,0,180]) wemos_d1_mini_clip();
         
+        //Supports for internal structure
+        for (x=[1,-1],y=[1,-1])
+        {
+            difference() {
+                translate ([x*(wi/2-th),y*(hi-th),0]) cylinder(h=27-th/2,r=3);
+                translate ([x*(wi/2-th),y*(hi-th),10]) cylinder(h=27,r=1.2);
+            }
+        }        
     }
-    translate([-9,li/2-0.5,4]) cube([18,2,1.8]);
+    
     
     // USB-C cutout for charge board
     translate([4.7,34,9.2]) rotate ([0,90,90]) rounded_cube_xy([3.7,9.4,2*th],1);
+    translate([-9,li/2-0.5,4]) cube([18,2,1.8]);
     
     // Hole for on/off button
     translate ([43,20,10]) rotate ([0,90,0]) cylinder(h=6,d=11.5);
     
     // Cutout for debug
-    translate ([16,-110,0]) cube([60,100,70]);
+    //translate ([-16,-60,0]) cube([60,100,70]);
 }
 
 //Cover
-*translate ([0,0,hi])
+//translate ([0,0,hi])     rotate([0,180,0])
+translate([0,wi+3*th,0])
 difference() {
-    rotate([0,180,0]) HoldingCover([wi,li,hi],th=th);
+    HoldingCover([wi,li,hi],th=th);
     translate([30,0,-10]) rotate([0,0,-90]) HCSR04();
     
     translate ([-5,0,-1.2]) linear_extrude(th) circle(d = 50, $fn=64);  
@@ -87,30 +97,21 @@ difference() {
         for (i = [0:11])
         {
             translate([21*cos(i*angle_offset),21*sin(i*angle_offset),1.6])
-                    cylinder(5,r=0.8,center=true);        
+                    cylinder(5,r=1.2,center=true);        
         }
     
     // Cutout for debug
-    translate ([-10,-50,-10]) cube([60,100,70]);
+    //translate ([-16,-110,-10]) cube([60,100,70]);
 }
 
 
 
-// corner supports
-*translate ([-wi/2+th,-hi+th,0]) cylinder(h=hi-2*th,r=3);
-*translate ([wi/2-th,-hi+th,0]) cylinder(h=hi-2*th,r=3);
-*translate ([wi/2-th,hi-th,0]) cylinder(h=hi-2*th,r=3);
-*translate ([-wi/2+th,hi-th,0]) cylinder(h=hi-2*th,r=3);
-
-
-
-
-
 //Internal structure
-*translate([0,0,27]) 
+//translate([0,0,27]) 
+translate([0,-(wi-3*th),0])
 difference() {
     union() {
-        cube([wi,li,th],center=true);
+        rounded_cube_xy([wi-th,li-th,th],r=3,xy_center=true);
         
         // Support for led ring
         translate([-21.7,-16.5,0]) cylinder(h=3,r=2);
@@ -119,8 +120,8 @@ difference() {
         translate([11.7,16.5,0]) cylinder(h=3,r=2);
         
         // Battery support from above
-        translate([-35,-28,-7.8]) cube([12,21,8]);
-        translate([-35,7,-7.8]) cube([12,21,8]);
+        //translate([-35,-28,-7.8]) cube([12,21,8]);
+        //translate([-35,7,-7.8]) cube([12,21,8]);
         
         // Support for bate charger
         //translate ([4,8,-24.5]) cylinder(h=25,r=2);
@@ -151,11 +152,17 @@ difference() {
     translate([-21.7,16.5,-2]) cylinder(h=8,r=1);
     translate([11.7,-16.5,-2]) cylinder(h=8,r=1);
     translate([11.7,16.5,-2]) cylinder(h=8,r=1);
+    
+    // Screw holes for corner support
+    for (x=[1,-1],y=[1,-1])
+    {
+        translate ([x*(wi/2-th),y*(hi-th),-5]) cylinder(h=10,r=1.2);
+    }   
 }
 
 
 // Battery
-translate([-29,0,10]) rotate ([90,0,0]) battery(S25R18650);
+*translate([-29,0,10]) rotate ([90,0,0]) battery(S25R18650);
 
 //// Ultrasonic sensor
 *translate([30,0,25]) rotate([0,0,-90]) HCSR04();
@@ -165,10 +172,10 @@ translate([-29,0,10]) rotate ([90,0,0]) battery(S25R18650);
 
 // WemosD1Mini 
 WD1MOPOS = 0;
-translate([22, -18, 6]) rotate ([0,0,-90]) WemosD1M(pins=0, atorg=WD1MOPOS, usb=1);
+*translate([22, -18, 6]) rotate ([0,0,-90]) WemosD1M(pins=0, atorg=WD1MOPOS, usb=1);
 
 // Charger board
-translate ([0,22.2,5]) rotate([0,0,-90]) TP4056_charger_booster();
+*translate ([0,22.2,5]) rotate([0,0,-90]) TP4056_charger_booster();
 
 // ON/off button
-translate ([29.5,20,10]) rotate ([0,90,0]) button(facets=20);
+*translate ([29.5,20,10]) rotate ([0,90,0]) button(facets=20);
