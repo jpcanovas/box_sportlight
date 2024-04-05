@@ -24,4 +24,4 @@ module button(facets=32)
 
 }
 
-button();
+*button();
