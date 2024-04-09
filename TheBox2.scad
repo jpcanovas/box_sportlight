@@ -30,8 +30,10 @@ th=2.4; // wall thickness
 module batt_support() {
     difference() {
         //rounded_cube_xz([22,4,14],r=3);
-        cube([28,8,12]);
-        translate([14,0,10]) rotate ([90,0,0]) scale([1.04,1.04,1.04]) battery(S25R18650);
+        cube([20,20,6],center=true);
+        cylinder(h=6+0.2,r=18.8/2, $fn=32);
+        translate([-11,-1,-1])cube([2,4,4]);
+        
     }
 }
 
@@ -54,9 +56,8 @@ difference() {
         translate([2,10.2,4]) rotate([0,0,-90]) pillar(4);
         
         // Supports for the battery
-        translate([-43,-4,0]) batt_support();
-        translate([-43,20,0]) batt_support();
-        translate([-43,-28,0]) batt_support();
+        translate([-28,33.2,10]) rotate([0,90,-90]) batt_support();
+        translate([-28,-33.2,10]) rotate([0,90,90]) batt_support();
         
         // Clips for the WemosD1 Mini
         translate ([40,-5,5]) rotate([0,0,180]) wemos_d1_mini_clip();
@@ -80,7 +81,7 @@ difference() {
     translate ([43,20,10]) rotate ([0,90,0]) cylinder(h=6,d=11.5);
     
     // Cutout for debug
-    //translate ([-16,-60,0]) cube([60,100,70]);
+    //translate ([-24,-60,0]) cube([60,100,70]);
 }
 
 //Cover
@@ -93,17 +94,16 @@ difference() {
     translate ([-5,0,-1.2]) linear_extrude(th) circle(d = 50, $fn=64);  
     // Holes for leds
     angle_offset = 360/12;
-    translate([-5,0,0]) 
+    #translate([-5,0,0]) 
         for (i = [0:11])
         {
-            translate([21*cos(i*angle_offset),21*sin(i*angle_offset),1.6])
+            translate([21*cos(i*angle_offset),21*sin(i*angle_offset),-0.4])
                     cylinder(5,r=1.2,center=true);        
         }
     
     // Cutout for debug
     //translate ([-16,-110,-10]) cube([60,100,70]);
 }
-
 
 
 //Internal structure
@@ -162,7 +162,7 @@ difference() {
 
 
 // Battery
-*translate([-29,0,10]) rotate ([90,0,0]) battery(S25R18650);
+translate([-28,0,10]) rotate ([90,0,0]) battery(S25R18650);
 
 //// Ultrasonic sensor
 *translate([30,0,25]) rotate([0,0,-90]) HCSR04();
